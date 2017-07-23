@@ -57,6 +57,10 @@ public class FrontendConfig {
   @Default("8192")
   public final Integer frontendChunkedGetResponseThresholdInBytes;
 
+  @Config("frontend.authorize.secret")
+  public final String authorizeSecret;
+
+
   public FrontendConfig(VerifiableProperties verifiableProperties) {
     frontendCacheValiditySeconds = verifiableProperties.getLong("frontend.cache.validity.seconds", 365 * 24 * 60 * 60);
     frontendIdConverterFactory = verifiableProperties.getString("frontend.id.converter.factory",
@@ -67,5 +71,6 @@ public class FrontendConfig {
         Arrays.asList(verifiableProperties.getString("frontend.path.prefixes.to.remove", "").split(","));
     frontendChunkedGetResponseThresholdInBytes =
         verifiableProperties.getInt("frontend.chunked.get.response.threshold.in.bytes", 8192);
+    authorizeSecret = verifiableProperties.getString("frontend.authorize.secret");
   }
 }
