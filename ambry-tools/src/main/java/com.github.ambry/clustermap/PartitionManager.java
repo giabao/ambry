@@ -114,7 +114,22 @@ public class PartitionManager {
         System.out.println("Partition layout path not found. Creating new file");
       }
       StaticClusterManager manager = null;
-      ClusterMapConfig clusterMapConfig = new ClusterMapConfig(new VerifiableProperties(new Properties()));
+
+      //++++++++++
+      //set required properties for ClusterMapConfig from file `hardwareLayoutPath`
+      Properties clusterMapConfigProps = new Properties();
+      JSONObject hardwareLayoutJs = new JSONObject(Utils.readStringFromFile(hardwareLayoutPath));
+      //1. clustermap.cluster.name = value of `clusterName` field
+      clusterMapConfigProps.setProperty("clustermap.cluster.name", hardwareLayoutJs.getString("clusterName"));
+      //2. clustermap.datacenter.name = vallue of `name` field of the first `datacenters` item
+      JSONObject firstDC = hardwareLayoutJs.getJSONArray("datacenters").getJSONObject(0);
+      clusterMapConfigProps.setProperty("clustermap.datacenter.name", firstDC.getString("name"));
+      //3. clustermap.host.name = value of `hostname` field of the first `dataNodes` item of the first `datacenters` item
+      JSONObject firstNode = firstDC.getJSONArray("dataNodes").getJSONObject(0);
+      clusterMapConfigProps.setProperty("clustermap.host.name", firstNode.getString("hostname"));
+      //----------
+
+      ClusterMapConfig clusterMapConfig = new ClusterMapConfig(new VerifiableProperties(clusterMapConfigProps));
       if (fileString == null) {
         manager = (new StaticClusterAgentsFactory(clusterMapConfig, new PartitionLayout(
             new HardwareLayout(new JSONObject(Utils.readStringFromFile(hardwareLayoutPath)),
