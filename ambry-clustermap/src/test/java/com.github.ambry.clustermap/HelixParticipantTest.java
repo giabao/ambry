@@ -195,6 +195,16 @@ public class HelixParticipantTest {
         }
 
         @Override
+        public StateModelFactory<? extends StateModel> getStateModelFactory(String stateModelName) {
+          return stateModelFactory;
+        }
+
+        @Override
+        public StateModelFactory<? extends StateModel> getStateModelFactory(String stateModelName, String factoryName) {
+          return stateModelFactory;
+        }
+
+        @Override
         public MessageHandler createHandler(Message message, NotificationContext context) {
           return null;
         }
@@ -378,6 +388,10 @@ public class HelixParticipantTest {
 
     @Override
     public ParticipantHealthReportCollector getHealthReportCollector() {
+      throw new IllegalStateException("Not implemented");
+    }
+    @Override
+    public Long getSessionStartTime() {
       throw new IllegalStateException("Not implemented");
     }
   }
