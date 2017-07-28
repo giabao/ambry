@@ -130,7 +130,16 @@ public class ClusterMapUtils {
     }
 
     try {
-      return InetAddress.getByName(unqualifiedHostname).getCanonicalHostName().toLowerCase();
+      InetAddress inet = InetAddress.getByName(unqualifiedHostname);
+      String canonical = inet.getCanonicalHostName();
+      //If we can not get canonical name
+      //(this occur when unqualifiedHostname is the service name in Rancher, Docker Swarm)
+      //Then canonical host name will be equal to the ip address.
+      //In that case, we return unqualifiedHostname so when run com.github.ambry.clustermap.HelixBootstrapUpgradeTool,
+      //the instance name will retain as datacenters / dataNodes / hostname.
+      //Then, when run com.github.ambry.server.AmbryMain, helix can select the correct instance.
+      //Also note that, in Rancher, Swarm managed network environment, IPs can be changed
+      return canonical.equals(inet.getHostAddress())? unqualifiedHostname : canonical.toLowerCase();
     } catch (UnknownHostException e) {
       throw new IllegalStateException(
           "Host (" + unqualifiedHostname + ") is unknown so cannot determine fully qualified domain name.");
