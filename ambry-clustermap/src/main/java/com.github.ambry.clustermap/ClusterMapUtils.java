@@ -49,7 +49,7 @@ public class ClusterMapUtils {
   static final int MAX_PORT = 65535;
   static final long MIN_REPLICA_CAPACITY_IN_BYTES = 1024 * 1024 * 1024L;
   static final long MAX_REPLICA_CAPACITY_IN_BYTES = 10L * 1024 * 1024 * 1024 * 1024;
-  static final long MIN_DISK_CAPACITY_IN_BYTES = 10L * 1024 * 1024 * 1024;
+  static final long MIN_DISK_CAPACITY_IN_BYTES = 3L * 1024 * 1024 * 1024;
   static final long MAX_DISK_CAPACITY_IN_BYTES = 10L * 1024 * 1024 * 1024 * 1024;
 
   /**
