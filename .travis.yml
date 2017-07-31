@@ -3,17 +3,29 @@ script:
   - ./gradlew build && ./gradlew codeCoverageReport
 sudo: required
 jdk:
-  - oraclejdk8
+- oraclejdk8
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
 addons:
   apt:
     packages:
-      - oracle-java8-installer
+    - oracle-java8-installer
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+- bash <(curl -s https://codecov.io/bash)
+before_deploy:
+- ./gradlew allJar
+deploy:
+  provider: releases
+  api_key:
+    secure: dQwQ/QHGq/cPQVHYZnWJgp39h1PEghRUqQGH0xuVaovWfyvAvB962fVnacLgWwW8xx9RrzQIOQkRlNe8owsfi4fssz4wY0I8uOBlZaKlxeRYCPFeSW3qm0Dyu5PZwsLgC0mAxxQgbyiYtSe4noYCICQ/kYxfYoI4J+jIlm8gc2A8hS7q13/1Ns9X+08HwsWlUZhjwIJ05El+zoVZLgLmoMezIflkQHAl/SJiNoAgCq9yG/H5veqEs11EbpFM3IBs+XAXFUjvf1Ofa9+yvTXCIhqWRQ/jYbnehUF44PJ9JSaMCbhd9fMYfUzEq4a7jvt1IvoO2OBl/kFxDkmAIRw61QIDCc/lXbar+/N115MbKVG9btqm9Z+X9j2y7+yDkcdaUh6YMXy+eJWD+KuqFpdhdwmo2tzeu5Ff0fzPlEIbbU+NT83T3UeFrfB9D0nQp8n0rYK66JB/ZLh5dFB7u4YGN8MO+DX/XFegKtkqRQjDiDlBf+pejWBLNXghi0APdEFO6IgSMbaT9NBmtHot2PmyT8l44oP4KiFAAFBE+WseeoAfnPPE/y0W4wo8sxYefpwrOMsX5QLUgA55CmowN2pVbmWvRpejq+la2ndizUpAep3BSfxgBqOfjOJpHkT8EhWuDqxectbt5yTZBjRTzwUXAglT+U8xDB+zWI6d3XwuPVQ=
+  file: target/ambry.jar
+  skip_cleanup: true
+  on:
+    repo: ohze/ambry
+    branch: ohze
+    tags: true
