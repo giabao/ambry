@@ -722,8 +722,10 @@ class AmbryBlobStorageService implements BlobStorageService {
                           response = new ByteBufferReadableStreamChannel(AmbryBlobStorageService.EMPTY_BUFFER);
                         }
                       } else if (!blobNotModified) {
+                        setInjectHeaders(routerResult, restResponseChannel);
                         response = routerResult.getBlobDataChannel();
                       } else {
+                        setInjectHeaders(routerResult, restResponseChannel);
                         // If the blob was not modified, we need to close the channel, as it will not be submitted to
                         // the RestResponseHandler
                         routerResult.getBlobDataChannel().close();
@@ -756,6 +758,26 @@ class AmbryBlobStorageService implements BlobStorageService {
      */
     void markStartTime() {
       callbackTracker.markOperationStart();
+    }
+
+    /**
+     * Set the user metadata with key startsWith(USER_META_DATA_INJECT_HEADER_PREFIX)
+     * in the headers of the response.<br/>
+     * @param routerResult The result of the request i.e a {@link GetBlobResult} object with the properties of the blob
+     *                     (and a channel for blob data, if the request did not have a subresource).
+     * @param restResponseChannel the {@link RestResponseChannel} that is used for sending the response.
+     * @throws RestServiceException if there are any problems setting the header.
+     */
+    private void setInjectHeaders(GetBlobResult routerResult, RestResponseChannel restResponseChannel) throws RestServiceException {
+      BlobInfo blobInfo = routerResult.getBlobInfo();
+      Map<String, String> userMetadata = RestUtils.buildUserMetadata(blobInfo.getUserMetadata());
+      if (userMetadata == null) return;
+      for (Map.Entry<String, String> entry : userMetadata.entrySet()) {
+        if (entry.getKey().startsWith(RestUtils.Headers.USER_META_DATA_INJECT_HEADER_PREFIX)) {
+          final String key = entry.getKey().substring(RestUtils.Headers.USER_META_DATA_INJECT_HEADER_PREFIX.length());
+          restResponseChannel.setHeader(key, entry.getValue());
+        }
+      }
     }
 
     /**

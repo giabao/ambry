@@ -130,6 +130,16 @@ public class RestUtils {
     public final static String USER_META_DATA_HEADER_PREFIX = "x-ambry-um-";
 
     /**
+     * Use case:
+     * We want to add some customized header to the response of
+     * <a href="https://github.com/linkedin/ambry/wiki/Rest%20API#get">GET</a> method, ex:
+     * <pre>Content-Disposition: attachment; filename="my_file.zip"</pre>
+     * To do that, when <a href="https://github.com/linkedin/ambry/wiki/Rest%20API#post">POST</a>, we send the following header:
+     * <pre>x-ambry-um--inject-Content-Disposition: attachment; filename="my_file.zip"</pre>
+     */
+    public final static String USER_META_DATA_INJECT_HEADER_PREFIX = "x-ambry-um--inject-";
+
+    /**
      * Header to contain the Cookies
      */
     public final static String COOKIE = "Cookie";
