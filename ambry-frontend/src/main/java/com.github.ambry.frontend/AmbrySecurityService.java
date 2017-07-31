@@ -61,6 +61,8 @@ class AmbrySecurityService implements SecurityService {
       exception = new RestServiceException("SecurityService is closed", RestServiceErrorCode.ServiceUnavailable);
     } else if (restRequest == null) {
       throw new IllegalArgumentException("RestRequest is null");
+    } else if (! authorize(restRequest)) {
+      exception = new RestServiceException("Unauthorized POST/DELETE request", RestServiceErrorCode.Unauthorized);
     }
     FutureResult<Void> futureResult = new FutureResult<Void>();
     if (callback != null) {
@@ -69,6 +71,13 @@ class AmbrySecurityService implements SecurityService {
     futureResult.done(null, exception);
     frontendMetrics.securityServiceProcessRequestTimeInMs.update(System.currentTimeMillis() - startTimeMs);
     return futureResult;
+  }
+
+  private boolean authorize(RestRequest restRequest) {
+    RestMethod method = restRequest.getRestMethod();
+    return method != RestMethod.DELETE && method != RestMethod.POST
+            || "".equals(frontendConfig.authorizeSecret)
+            || frontendConfig.authorizeSecret.equals(restRequest.getArgs().get("Authorization"));
   }
 
   @Override
